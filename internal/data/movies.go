@@ -1,8 +1,11 @@
 package data
 
 import (
+	"database/sql"
 	"greenlight/internal/validator"
 	"time"
+
+	"github.com/lib/pq"
 )
 
 // Movie represents a movie you can research.
@@ -34,4 +37,63 @@ func ValidateMovie(v *validator.Validator, movie *Movie) {
 	// Note that we're using the Unique helper in the line below to check that all
 	// values in the input.Genres slice are unique.
 	v.Check(validator.Unique(movie.Genres), "genres", "must not contain duplicate values")
+}
+
+// MovieModel connects to the DB.
+type MovieModel struct {
+	DB *sql.DB
+}
+
+// Insert inserts the movie.
+func (m *MovieModel) Insert(movie *Movie) error {
+	query := `
+	INSERT INTO movies (title, year, runtime, genres)
+	VALUES ($1, $2, $3, $4)
+	RETURNING id, created_at, version`
+
+	args := []any{movie.Title, movie.Year, movie.Runtime, pq.Array(movie.Genres)}
+
+	return m.DB.QueryRow(query, args...).Scan(&movie.ID, &movie.CreatedAt, &movie.Version)
+}
+
+// Get gets the movie.
+func (m *MovieModel) Get(id int64) (*Movie, error) {
+	return nil, nil
+}
+
+// Update updates the movie.
+func (m *MovieModel) Update(movie *Movie) error {
+	return nil
+}
+
+// Delete deletes the movie.
+func (m *MovieModel) Delete(id int64) error {
+	return nil
+}
+
+// MockMovieModel for unit testing.
+type MockMovieModel struct{}
+
+// Insert inserts the movie.
+func (m MockMovieModel) Insert(movie *Movie) error {
+	// Mock the action...
+	return nil
+}
+
+// Get gets the movie.
+func (m MockMovieModel) Get(id int64) (*Movie, error) {
+	// Mock the action...
+	return nil, nil
+}
+
+// Update updates the movie.
+func (m MockMovieModel) Update(movie *Movie) error {
+	// Mock the action...
+	return nil
+}
+
+// Delete deletes the movie.
+func (m MockMovieModel) Delete(id int64) error {
+	// Mock the action...
+	return nil
 }
