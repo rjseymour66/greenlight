@@ -8,6 +8,8 @@ import (
 var (
 	// ErrRecordNotFound when no record found.
 	ErrRecordNotFound = errors.New("record not found")
+	// ErrEditConflict when more than one client tries to edit a db record at the same time.
+	ErrEditConflict = errors.New("edit conflict")
 )
 
 // Models wriaps all models to hold all models as the application grows.
