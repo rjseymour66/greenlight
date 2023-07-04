@@ -113,8 +113,33 @@ func (m *MovieModel) Update(movie *Movie) error {
 
 // Delete deletes the movie.
 func (m *MovieModel) Delete(id int64) error {
+	if id < 1 {
+		return ErrRecordNotFound
+	}
+
+	query := `
+	DELETE FROM movies
+	WHERE id = $1`
+
+	result, err := m.DB.Exec(query, id)
+	if err != nil {
+		return err
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if rowsAffected == 0 {
+		return ErrRecordNotFound
+	}
+
 	return nil
 }
+
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 // MockMovieModel for unit testing.
 type MockMovieModel struct{}
