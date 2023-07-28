@@ -4,11 +4,13 @@ import (
 	"context"
 	"database/sql"
 	"flag"
+	"os"
+	"sync"
+	"time"
+
 	"greenlight/internal/data"
 	"greenlight/internal/jsonlog"
 	"greenlight/internal/mailer"
-	"os"
-	"time"
 
 	_ "github.com/lib/pq"
 )
@@ -44,6 +46,7 @@ type application struct {
 	logger *jsonlog.Logger
 	models data.Models
 	mailer mailer.Mailer
+	wg     sync.WaitGroup
 }
 
 func main() {
